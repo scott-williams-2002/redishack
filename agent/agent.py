@@ -3,7 +3,7 @@ LangGraph + CopilotKit agent with Redis Cloud long-term memory + Web Search.
 """
 
 from tools.tavily_agent import create_tavily_search_tool_node, tavily_search
-
+from tools.product_analyzer import analyze_product_marketing
 
 from typing import Any, List
 from typing_extensions import Literal
@@ -70,7 +70,8 @@ def get_shopping_profile(user_id: str):
 backend_tools = [
     update_shopping_profile,
     get_shopping_profile,
-    tavily_search 
+    tavily_search,
+    analyze_product_marketing,
 ]
 
 backend_tool_names = [tool.name for tool in backend_tools]
@@ -93,6 +94,9 @@ async def chat_node(state: AgentState, config: RunnableConfig):
     system_message = SystemMessage(
         content=(
             "You are a shopping assistant agent with long-term memory stored in Redis. "
+            "Your primary goal is to analyze products for manipulative marketing tactics. "
+            "When the user asks you to analyze a product, you MUST use the `analyze_product_marketing` tool. "
+            "You must provide realistic values for all tool parameters, including a list of suspected tactics. "
             "When relevant, use the `tavily_search` tool to perform deep research web searches. "
             f"Current shopping profile: {state.get('shopping_profile', {})}"
         )

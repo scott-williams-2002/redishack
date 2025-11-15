@@ -3,6 +3,7 @@
 import { useCoAgent, useCopilotAction } from "@copilotkit/react-core";
 import { CopilotKitCSSProperties, CopilotSidebar } from "@copilotkit/react-ui";
 import { useState } from "react";
+import ProductCard from "@/components/ProductCard";
 
 export default function CopilotKitPage() {
   const [themeColor, setThemeColor] = useState("#6366f1");
@@ -77,6 +78,37 @@ function YourMainContent({ themeColor }: { themeColor: string }) {
     ],
     render: ({ args }) => {
       return <WeatherCard location={args.location} themeColor={themeColor} />
+    },
+  });
+
+  // 🪁 Generative UI: Product Marketing Analysis
+  useCopilotAction({
+    name: "analyze_product_marketing",
+    description: "Analyze a product for manipulative marketing tactics and render a custom UI component.",
+    available: "disabled",
+    parameters: [
+      { name: "productName", type: "string", required: true },
+      { name: "productLink", type: "string", required: true },
+      { name: "imageUrl", type: "string", required: true },
+      { name: "description", type: "string", required: true },
+      { name: "manipulativeTactics", type: "string", required: true },
+      { name: "userQuestion", type: "string", required: true },
+    ],
+    render: ({ args }) => {
+      const tactics = typeof args.manipulativeTactics === 'string' 
+        ? args.manipulativeTactics.split('|').filter((t: string) => t.trim())
+        : args.manipulativeTactics;
+      
+      return (
+        <ProductCard
+          productName={args.productName}
+          productLink={args.productLink}
+          imageUrl={args.imageUrl}
+          description={args.description}
+          manipulativeTactics={tactics}
+          userQuestion={args.userQuestion}
+        />
+      );
     },
   });
 
